@@ -296,36 +296,40 @@ class _QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: SizedBox(
-        width: 240,
-        height: 164,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              question.imageUri,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  Container(color: Colors.grey.shade300),
-            ),
-            Container(color: Colors.black.withValues(alpha: 0.15)),
-            // Footer — fixed 60px height, frosted glass
-            // Border is on the outer Container so it doesn't double up with
-            // the ClipRect's sharp blur boundary.
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 60,
-              child: Container(
-                decoration: const BoxDecoration(),
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          width: 240,
+          height: 164,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(
+                question.imageUri,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    Container(color: Colors.grey.shade300),
+              ),
+              Container(color: Colors.black.withValues(alpha: 0.15)),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 60,
                 child: ClipRect(
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
                     child: Container(
-                      //color: const Color(0x33000000),
+                      decoration: const BoxDecoration(
+                        color: Color(0x33000000),
+                        border: Border(
+                          top: BorderSide(
+                            color: Color(0x1AFFFFFF),
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 10,
@@ -333,7 +337,6 @@ class _QuestionCard extends StatelessWidget {
                       child: Text(
                         question.title,
                         style: AppTextStyles.questionTitle,
-
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -341,8 +344,8 @@ class _QuestionCard extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

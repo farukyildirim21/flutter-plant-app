@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/network/dio_client.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/onboarding/data/datasources/onboarding_local_datasource.dart';
+import 'features/onboarding/data/repositories/onboarding_repository_impl.dart';
+import 'features/onboarding/domain/repositories/onboarding_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,25 +15,32 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   final prefs = await SharedPreferences.getInstance();
-  final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+  final onboardingRepository = OnboardingRepositoryImpl(
+    OnboardingLocalDatasource(prefs),
+  );
 
-  runApp(PlantApp(onboardingDone: onboardingDone));
+  runApp(PlantApp(onboardingRepository: onboardingRepository));
 }
 
 class PlantApp extends StatelessWidget {
-  PlantApp({super.key, required this.onboardingDone});
+  PlantApp({super.key, required this.onboardingRepository});
 
-  final bool onboardingDone;
+  final OnboardingRepository onboardingRepository;
 
-  late final _appRouter = AppRouter(onboardingDone: onboardingDone);
+  late final _appRouter = AppRouter(
+    onboardingDone: onboardingRepository.isOnboardingCompleted,
+  );
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'PlantApp',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      routerConfig: _appRouter.config(),
+    return RepositoryProvider<OnboardingRepository>.value(
+      value: onboardingRepository,
+      child: MaterialApp.router(
+        title: 'PlantApp',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        routerConfig: _appRouter.config(),
+      ),
     );
   }
 }

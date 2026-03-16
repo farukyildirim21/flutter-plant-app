@@ -3,19 +3,18 @@ import 'dart:ui';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/router/app_router.dart';
-import '../../../../core/widgets/app_button.dart';
+import '../../../../shared/widgets/app_button.dart';
+import '../../../onboarding/domain/repositories/onboarding_repository.dart';
 import '../bloc/paywall_cubit.dart';
 
 // Onboarding tamamlandı → flag kaydet, Home'a git
 Future<void> _completeOnboarding(BuildContext context) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setBool('onboarding_done', true);
+  await context.read<OnboardingRepository>().completeOnboarding();
   if (context.mounted) {
     context.router.replaceAll([const HomeRoute()]);
   }

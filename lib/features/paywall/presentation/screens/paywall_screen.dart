@@ -226,30 +226,36 @@ class _FeatureCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon container — PNG assets are 36×36 full artwork, no padding
+              // Icon container — 36×36 with 9px padding → 18×18 icon (Figma spec)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
                   width: 36,
                   height: 36,
                   color: const Color(0x3D000000),
+                  padding: const EdgeInsets.all(9),
                   child: data.iconAsset != null
-                      ? Image.asset(data.iconAsset!, fit: BoxFit.fill)
-                      : Padding(
-                          padding: const EdgeInsets.all(7),
-                          child: Icon(
-                            data.iconFallback,
-                            color: Colors.white,
-                            size: 22,
-                          ),
+                      ? Image.asset(data.iconAsset!, fit: BoxFit.contain)
+                      : Icon(
+                          data.iconFallback,
+                          color: Colors.white,
+                          size: 18,
                         ),
                 ),
               ),
               const SizedBox(height: 10),
-              // Texts
-              Text(data.title, style: AppTextStyles.featureTitle),
+              // Texts — softWrap: false matches Figma whitespace-nowrap
+              Text(
+                data.title,
+                style: AppTextStyles.featureTitle,
+                softWrap: false,
+              ),
               const SizedBox(height: 4),
-              Text(data.subtitle, style: AppTextStyles.featureSubtitle),
+              Text(
+                data.subtitle,
+                style: AppTextStyles.featureSubtitle,
+                softWrap: false,
+              ),
             ],
           ),
         ),
